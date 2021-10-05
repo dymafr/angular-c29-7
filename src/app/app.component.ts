@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { AuthService } from './shared/services/auth.service';
+import { tryLogoutAction } from './shared/store/auth.actions';
+import { selectIsLoggedin } from './shared/store/auth.selectors';
 
 @Component({
   selector: 'app-root',
@@ -9,14 +10,12 @@ import { AuthService } from './shared/services/auth.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  public isLoggedin$: Observable<boolean> =
-    this.authService.isLoggedin$.asObservable();
+  public isLoggedin$: Observable<boolean | null> =
+    this.store.select(selectIsLoggedin);
 
   public logout() {
-    this.authService.logout().subscribe(() => {
-      this.router.navigateByUrl('/connexion');
-    });
+    this.store.dispatch(tryLogoutAction());
   }
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private store: Store) {}
 }
