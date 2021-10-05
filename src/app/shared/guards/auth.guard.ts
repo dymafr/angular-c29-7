@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { filter, first, map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { selectIsLoggedin } from '../store/auth.selectors';
 
 @Injectable({
