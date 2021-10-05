@@ -13,8 +13,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(): Observable<boolean> {
     return this.store.select(selectIsLoggedin).pipe(
-      filter((x) => x !== null),
-      first(),
+      first((x) => x !== null),
       map((isLoggedin: boolean | null) => {
         if (!isLoggedin) {
           this.router.navigateByUrl('/connexion');
