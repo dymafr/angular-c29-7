@@ -1,5 +1,3 @@
-
-  
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AuthState, authStateKey } from './auth.reducer';
 

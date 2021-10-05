@@ -1,25 +1,26 @@
 import { Injectable } from '@angular/core';
 import { CanActivate } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { first, mapTo, switchMap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { first, map } from 'rxjs/operators';
 import { User } from '../interfaces/user.interface';
-import { AuthService } from '../services/auth.service';
+import { tryFetchCurrentUserAction } from '../store/auth.actions';
+import { selectCurrentUser } from '../store/auth.selectors';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataUserGuard implements CanActivate {
-  constructor(private authService: AuthService) {}
+  constructor(private store: Store) {}
 
   canActivate(): Observable<true> {
-    return this.authService.user$.pipe(
+    return this.store.select(selectCurrentUser).pipe(
       first(),
-      switchMap((user: User | null): Observable<true> => {
+      map((user: User | null) => {
         if (!user) {
-          return this.authService.fetchCurrentUser().pipe(mapTo(true));
-        } else {
-          return of(true);
+          this.store.dispatch(tryFetchCurrentUserAction());
         }
+        return true;
       })
     );
   }
