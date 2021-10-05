@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../../shared/services/auth.service';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { tryInscriptionAction } from '../../shared/store/auth.actions';
+import { selectError } from '../../shared/store/auth.selectors';
 
 @Component({
   selector: 'app-inscription',
@@ -14,25 +16,16 @@ export class InscriptionComponent implements OnInit {
     name: ['', Validators.required],
     password: ['', Validators.required],
   });
-  public error!: string;
+  public error$: Observable<string | null> = this.store.select(selectError);
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private fb: FormBuilder, private store: Store) {}
 
   ngOnInit(): void {}
 
   public submit() {
     if (this.form.valid) {
-      this.authService.inscription(this.form.getRawValue()).subscribe(
-        () => {
-          this.router.navigateByUrl('/connexion');
-        },
-        (err) => {
-          this.error = err?.error || 'Une erreur est survenue.';
-        }
+      this.store.dispatch(
+        tryInscriptionAction({ user: this.form.getRawValue() })
       );
     }
   }
